@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Accelerometer Demo</title>
+</head>
+<body>
+	<h1>Accelerometer Test</h1>
+	<div id='reading-box'>
+	</div>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		let dataPointMap = {};
+		let numPoints = 100;
+		let socket = io('http://localhost:3000/');
+		socket.on('reading', function(data) {
+			let readingElement = document.getElementById('reading-' + data.id);
+			if (readingElement == null) {
+				dataPointMap[data.id] = [data.x];
+				readingElement = document.createElement('DIV');
+				readingElement.setAttribute('id', 'reading-' + data.id);
+				document.getElementById('reading-box').appendChild(readingElement);
+			}
+
+			readingElement.innerHTML = `Device ${data.id} - x: ${data.x}, y:${data.y}, z:${data.z}`;
+		})
+	</script>
+</body>
+</html>
