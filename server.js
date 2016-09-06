@@ -18,26 +18,55 @@ const config = {
 let id = 0;
 let mq = new MessageQueue();
 
+function calcDistance(s, v, a, t) {
+	return s + (v + 0.5*a*t)*t;
+}
+
+function calcVelocity(v, a, t) {
+	return (v + a*t);
+}
+
 const readingServer = net.createServer((socket) => {
 	id+= 1;
 	let localId = id;
+
+	let ballCoordinates = {
+		x: 400,
+		y: 400
+	};
+
+	let velocity = {
+		x: 0,
+		y: 0
+	};
+	let deltaT = 0.01;
 	console.log(socket.remoteAddress,":", socket.remotePort, " just connected");
+
 	socket.setEncoding('utf8');
 	socket.on('data', (data) => {
 		let splitData = data.split(',');
 		if (splitData.length == 3) {
 			let reading = {
-				id: localId, 
-				x: splitData[0], 
-				y: splitData[1],
-				z: splitData[2]
+				x: ballCoordinates.x, 
+				y: ballCoordinates.y,
+				id: localId
 			};
+
 			console.log(
 				`Data sent by ${reading.id} - `+
 				`x: ${reading.x}, `+
-				`y: ${reading.y}, `+
-				`z: ${reading.z}`);
+				`y: ${reading.y}, `
+			);
+
 			mq.push(reading);
+
+			let acceleration = {x: splitData[0], y: splitData[1]};
+
+			ballCoordinates.x = calcDistance(ballCoordinates.x, velocity.x, acceleration.x, deltaT);
+			ballCoordinates.y =  calcDistance(ballCoordinates.y, velocity.y, acceleration.y, deltaT);
+
+			velocity.x = calcVelocity(velocity.x, acceleration.x, deltaT);
+			velocity.y = calcVelocity(velocity.y, acceleration.y, deltaT);
 		}
 	});
 	socket.on('end', (had_err) => {
