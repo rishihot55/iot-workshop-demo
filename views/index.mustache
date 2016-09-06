@@ -29,6 +29,18 @@
 	      var x = [],
 	          y = [],
 	          z = [];
+				if(xx.length > 40) {
+					xx.shift();
+					xy.shift();
+				}
+				if(yx.length > 40) {
+					yx.shift();
+					yy.shift();
+				}
+				if(zx.length > 40) {
+					zx.shift();
+					zy.shift();
+				}
 	      for(var i = 0; i < xx.length; i++) {
 	        x.push({x: i, y: xy[i]});
 					console.log(xy[i]);
@@ -45,25 +57,22 @@
 	    var chart = new CanvasJS.Chart("chartContainer",
 	    {
 	      title:{
-	      text: "Multi-Series Line Chart"
+	      text: "Screened Data from Accelaratometer"
 	      },
 	      data: [
 	      {
-					showInLegend: true,
 					name: "acceleratometer-x",
 	        type: "line",
 					dataPoints: x
 	      },
 	        {
-					showInLegend: true,
 					name: "acceleratometer-y",
 	        type: "line",
 	        dataPoints: y
 	      },
 	        {
-					showInLegend: true,
-					name: "acceleratometer-z",
 	        type: "line",
+
 	        dataPoints: z
 	      }
 	      ]
@@ -85,7 +94,6 @@
 			}
 
 			readingElement.innerHTML = `Device ${data.id} - x: ${data.x}, y:${data.y}, z:${data.z}`;
-			count += 1;
 			xx.push(count);
 	    xy.push(parseInt(data.x));
 	    yx.push(count);
