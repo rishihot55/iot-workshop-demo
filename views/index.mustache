@@ -2,13 +2,45 @@
 <html>
 <head>
 	<title>Accelerometer Demo</title>
+	<script type="text/javascript" src="http://pubnub.github.io/eon/v/eon/0.0.10/eon.js"></script>
+  <link type="text/css" rel="stylesheet" href="http://pubnub.github.io/eon/v/eon/0.0.10/eon.css"/>
 </head>
 <body>
 	<h1>Accelerometer Test</h1>
 	<div id='reading-box'>
 	</div>
+	<div id='graph'>
+	</div>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
+		"use strict"
+		//initialize pubnub
+		let pubnub = PUBNUB.init({
+			publish_key:		'demo',
+			subscribe_key:	'demo'
+		});
+		function plot_graph(x, y, z) {
+			//publish the data/send the data to pubnub
+			pubnub.publish({
+				channel:	'c3-spline',
+				message:	{
+					eon:	{
+						'accelaratometer-x':	x,
+						'accelaratometer-y':	y,
+						'accelaratometer-z':	z
+					}
+				}
+			});
+		}
+		//plot the graph
+		eon.chart({
+			pubnub: pubnub,
+			channel: 'c3-spline',
+			generate: {
+				bindto: '#graph'
+			}
+		});
+
 		let dataPointMap = {};
 		let numPoints = 100;
 		let socket = io('http://localhost:3000/');
@@ -22,7 +54,8 @@
 			}
 
 			readingElement.innerHTML = `Device ${data.id} - x: ${data.x}, y:${data.y}, z:${data.z}`;
-		})
+			plot_graph(data.x, data.y, data.z);
+		});
 	</script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 // Dependencies for the readings server
+"use strict";
 const net = require('net');
 const MessageQueue = require('./message-queue');
 
@@ -26,8 +27,8 @@ const readingServer = net.createServer((socket) => {
 		let splitData = data.split(',');
 		if (splitData.length == 3) {
 			let reading = {
-				id: localId, 
-				x: splitData[0], 
+				id: localId,
+				x: splitData[0],
 				y: splitData[1],
 				z: splitData[2]
 			};
