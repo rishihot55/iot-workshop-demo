@@ -6,6 +6,8 @@ const MessageQueue = require('./message-queue');
 // Dependencies for the http server
 const app = require('express')();
 const httpServer = require('http').Server(app);
+const express = require('express');
+app.use(express.static('canvasjs-1.8.5'));
 
 const mustacheExpress = require('mustache-express');
 const io = require('socket.io')(httpServer);

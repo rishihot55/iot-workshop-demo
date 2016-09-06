@@ -2,44 +2,69 @@
 <html>
 <head>
 	<title>Accelerometer Demo</title>
-	<script type="text/javascript" src="http://pubnub.github.io/eon/v/eon/0.0.10/eon.js"></script>
-  <link type="text/css" rel="stylesheet" href="http://pubnub.github.io/eon/v/eon/0.0.10/eon.css"/>
+	<script type="text/javascript" src="/canvasjs.min.js"></script>
 </head>
 <body>
 	<h1>Accelerometer Test</h1>
 	<div id='reading-box'>
 	</div>
-	<div id='graph'>
-	</div>
+	<div id="chartContainer" style="height: 300px; width: 100%;">
+  </div>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 		"use strict"
-		//initialize pubnub
-		let pubnub = PUBNUB.init({
-			publish_key:		'demo',
-			subscribe_key:	'demo'
-		});
-		function plot_graph(x, y, z) {
-			//publish the data/send the data to pubnub
-			pubnub.publish({
-				channel:	'c3-spline',
-				message:	{
-					eon:	{
-						'accelaratometer-x':	x,
-						'accelaratometer-y':	y,
-						'accelaratometer-z':	z
-					}
-				}
-			});
-		}
-		//plot the graph
-		eon.chart({
-			pubnub: pubnub,
-			channel: 'c3-spline',
-			generate: {
-				bindto: '#graph'
-			}
-		});
+
+			var xx = [],
+	        xy = [],
+	        yx = [],
+	        yy = [],
+	        zx = [],
+	        zy = [];
+
+	    var count = 0;
+
+	    window.onload = chart_call(xx, xy, yx, yy, zx, zy);
+
+	    function chart_call(xx, xy, yx, yy, zx, zy) {
+	      var x = [],
+	          y = [],
+	          z = [];
+	      for(var i = 0; i < xx.length; i++) {
+	        x.push({x: i, y: xy[i]});
+					console.log(xy[i]);
+	      }
+	      for(var i = 0; i < yx.length; i++) {
+	        y.push({x: i, y: yy[i]});
+					console.log(yy[i]);
+	      }
+	      for(var i = 0; i < zx.length; i++) {
+	        z.push({x: i, y: zy[i]});
+					console.log(zy[i]);
+	      }
+
+	    var chart = new CanvasJS.Chart("chartContainer",
+	    {
+	      title:{
+	      text: "Multi-Series Line Chart"
+	      },
+	      data: [
+	      {
+	        type: "line",
+	        dataPoints: x
+	      },
+	        {
+	        type: "line",
+	        dataPoints: y
+	      },
+	        {
+	        type: "line",
+	        dataPoints: z
+	      }
+	      ]
+	    });
+
+	    chart.render();
+	  }
 
 		let dataPointMap = {};
 		let numPoints = 100;
@@ -54,7 +79,14 @@
 			}
 
 			readingElement.innerHTML = `Device ${data.id} - x: ${data.x}, y:${data.y}, z:${data.z}`;
-			plot_graph(data.x, data.y, data.z);
+			count += 1;
+			xx.push(count);
+	    xy.push(parseInt(data.x));
+	    yx.push(count);
+	    yy.push(parseInt(data.y));
+	    zx.push(count);
+	    zy.push(parseInt(data.z));
+	    chart_call(xx, xy, yx, yy, zx, zy);
 		});
 	</script>
 </body>
