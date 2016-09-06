@@ -39,7 +39,7 @@ const readingServer = net.createServer((socket) => {
 		x: 0,
 		y: 0
 	};
-	let deltaT = 0.01;
+	let deltaT = 0.1;
 	console.log(socket.remoteAddress,":", socket.remotePort, " just connected");
 
 	socket.setEncoding('utf8');
