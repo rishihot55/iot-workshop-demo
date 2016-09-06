@@ -7,22 +7,48 @@
 	<h1>Accelerometer Test</h1>
 	<div id='reading-box'>
 	</div>
+	<div id='gravity-box' width="500" height="500">
+	</div>
+	<script src="matter.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
+		let 
+			Engine = Matter.Engine,
+			Render = Matter.Render,
+			World = Matter.World,
+			Bodies = Matter.Bodies;
+
+		let engine = Engine.create();
+		engine.world.gravity.y = 0;
+		let gravityBox = document.getElementById('gravity-box');
+		let render = Render.create({
+			element: gravityBox,
+			engine: engine
+		});
+
+		let boxA = Bodies.rectangle(400, 200, 80, 80);
+
+		World.add(engine.world, [boxA]);
+
+		Engine.run(engine);
+		Render.run(render);
+
 		let dataPointMap = {};
 		let numPoints = 100;
 		let socket = io('http://localhost:3000/');
 		socket.on('reading', function(data) {
 			let readingElement = document.getElementById('reading-' + data.id);
 			if (readingElement == null) {
-				dataPointMap[data.id] = [data.x];
 				readingElement = document.createElement('DIV');
 				readingElement.setAttribute('id', 'reading-' + data.id);
 				document.getElementById('reading-box').appendChild(readingElement);
 			}
 
+			engine.world.gravity.x = data.x/10000;
+			engine.world.gravity.y = data.y/10000;
+
 			readingElement.innerHTML = `Device ${data.id} - x: ${data.x}, y:${data.y}, z:${data.z}`;
-		})
+		});
 	</script>
 </body>
 </html>

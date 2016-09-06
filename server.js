@@ -3,15 +3,16 @@ const net = require('net');
 const MessageQueue = require('./message-queue');
 
 // Dependencies for the http server
-const app = require('express')();
+const express = require('express');
+const app = express();
 const httpServer = require('http').Server(app);
 
 const mustacheExpress = require('mustache-express');
 const io = require('socket.io')(httpServer);
 
 const config = {
-	host: 'localhost',
-	port: '1337'
+	host: '0.0.0.0',
+	port: '5000'
 };
 
 let id = 0;
@@ -59,6 +60,7 @@ app.engine('mustache', mustacheExpress());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'mustache');
 app.disable('view cache');
+app.use(express.static('public'));
 
 httpServer.listen(appConfig.port, function() {
 	console.log('App listening on port', appConfig.port);
