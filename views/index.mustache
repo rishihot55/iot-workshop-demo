@@ -25,17 +25,27 @@
 			element: gravityBox,
 			engine: engine
 		});
+		render.options.wireframes = false;
 
-		let boxA = Bodies.rectangle(400, 200, 80, 80);
+		let boxA = Bodies.circle(400, 200, 80, {
+			render: {
+				fillStyle: '#3498db',
+			}
+		});
 
-		World.add(engine.world, [boxA]);
+		let boundaryTop = Bodies.rectangle(400, 0, 810, 60, {isStatic: true });
+		let boundaryBottom = Bodies.rectangle(400, 610, 810, 60, {isStatic: true});
+		let boundaryLeft = Bodies.rectangle(0, 400, 60, 810, {isStatic: true });
+		let boundaryRight = Bodies.rectangle(800, 400, 60, 810, {isStatic: true });
+
+		World.add(engine.world, [boxA, boundaryTop, boundaryBottom, boundaryLeft, boundaryRight]);
 
 		Engine.run(engine);
 		Render.run(render);
 
 		let dataPointMap = {};
 		let numPoints = 100;
-		let socket = io('http://localhost:3000/');
+		let socket = io('/');
 		socket.on('reading', function(data) {
 			let readingElement = document.getElementById('reading-' + data.id);
 			if (readingElement == null) {
